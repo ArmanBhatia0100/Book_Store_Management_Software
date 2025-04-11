@@ -9,6 +9,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -54,33 +56,29 @@ public class MainFrame extends JFrame{
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String actionCommand = e.getActionCommand();
-                String title = tFTitle.getText();
-                String author = tFAuthor.getText();
-                String isbn = tFISBN.getText();
-                Book.Status status = comboStatus.getSelectedItem().toString().equals("available") ? Book.Status.AVAILABLE : Book.Status.ISSUED;
-
-
-//                new Book()
+               String actionCommand = e.getActionCommand();
                 switch (actionCommand){
-//                    case "Add"-> BookDAOImplementation.addBook();
+                    case "Add" -> {
+                        addBook();
+                    }
                     default -> JOptionPane.showMessageDialog(null, "Unknown action command");
                 }
             }
         });
     }
 
+    // General Functions
     void initailSetup(){
         setSize(new Dimension(800, 600));
         add(mainPanel);
         this.setLocationRelativeTo(MainFrame.this);
         setVisible(true);
 
-        // Get book for booksDOA
-        Vector<Vector<Object>> books =  BookDAOImplementation.getAllBooks();
-        fetchTableData(books);
+        // fetch current data from the db.
+        fetchTableData();
 
-}   void getDateAndTime() {
+}
+    void getDateAndTime() {
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss");
@@ -102,18 +100,47 @@ public class MainFrame extends JFrame{
         // Start the timer
         timer.start();
     }
-
-    void fetchTableData(Vector<Vector<Object>> books){
-        // Got the books as Vector Object. which is thread safe.
-
+    void fetchTableData(){
         String[] columnNames = {"Title","Author","ISBN","Status","Added Date"};
-        // Create table with no rows and just columnsNames
         DefaultTableModel tableModel = new DefaultTableModel (columnNames,0);
 
+        Vector<Vector<Object>> books =  BookDAOImplementation.getAllBooks();
         // Take each book and add it to the table model.
-       for(Vector<Object> row : books){
-           tableModel.addRow(row);
-       }
+        for(Vector<Object> row : books){
+            tableModel.addRow(row);
+
+        }
+
+        // setting the entire model to the table
+        booksTable.setModel(tableModel);
+
+        // Styling the table
+        booksTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+
+
+        //Changed alignment of the records to center, Except the first two columns
+        for (int i = 1; i < booksTable.getColumnCount(); i++) {
+            booksTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+
+    }
+    void fetchTableData(Vector<Vector<Object>> books){
+
+        // Create table with no rows and just columnsNames
+        String[] columnNames = {"Title","Author","ISBN","Status","Added Date"};
+        DefaultTableModel tableModel = new DefaultTableModel (columnNames,0);
+
+            // Take each book and add it to the table model.
+            for(Vector<Object> row : books){
+                tableModel.addRow(row);
+
+        }
 
        // setting the entire model to the table
         booksTable.setModel(tableModel);
@@ -127,18 +154,59 @@ public class MainFrame extends JFrame{
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
 
-//        booksTable.getColumn("ID").setPreferredWidth(2);
 
         //Changed alignment of the records to center, Except the first two columns
         for (int i = 1; i < booksTable.getColumnCount(); i++) {
             booksTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
+
+    // Books based functions
     void getBookByISBN(){
         String ISBN = tFISBN.getText();
        Vector<Vector<Object>> books =  BookDAOImplementation.getBookByISBN(ISBN);
        fetchTableData(books);
 
+    }
+    void addBook(){
+        String title = tFTitle.getText();
+        String author = tFAuthor.getText();
+        String isbn = tFISBN.getText();
+        Book.Status status = comboStatus.getSelectedItem().toString().equals("Available") ? Book.Status.AVAILABLE : Book.Status.ISSUED;
+        LocalDate date = LocalDate.now();
+
+        Book newBook = new Book(title,author,isbn,status,date);
+
+        try{
+            boolean isAdded = BookDAOImplementation.addBook(newBook);
+
+            if(isAdded){
+                JOptionPane.showMessageDialog(null, "Book added");
+                resetAllTextFields();
+                fetchTableData();
+                booksTable.revalidate();
+                booksTable.repaint();
+            }
+        }catch (SQLIntegrityConstraintViolationException e){
+            String message = e.getMessage().toString();
+            JOptionPane.showMessageDialog(this, message);
+            resetAllTextFields();
+        }
+        catch (SQLException e){
+            String message = e.getLocalizedMessage();
+            JOptionPane.showMessageDialog(this, message);
+            resetAllTextFields();
+        }
+
+
+
+    }
+
+    void resetAllTextFields(){
+        tFTitle.setText("");
+        tFAuthor.setText("");
+        tFISBN.setText("");
+        comboStatus.setSelectedIndex(0);
     }
 }
 

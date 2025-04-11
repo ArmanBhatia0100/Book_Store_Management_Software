@@ -1,12 +1,22 @@
 package com.library.view.Books;
 
 import com.library.database.BookDAOImplementation;
+import com.library.model.Book;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import javax.swing.Timer;
 import java.util.Vector;
+
+import java.time.LocalDate;
 
 
 public class MainFrame extends JFrame{
@@ -27,30 +37,72 @@ public class MainFrame extends JFrame{
     private JComboBox comboStatus;
     private JPanel formPanel;
     private JButton findByISBNButton;
+    private JLabel GMtime;
+    private JLabel dayAndDate;
 
     public MainFrame(){
-        initailSetup();
-        setSize(new Dimension(800, 600));
-        add(mainPanel);
-        setVisible(true);
 
+        initailSetup();
+        getDateAndTime();
         findByISBNButton.addActionListener(e -> {
             String actionCommand = e.getActionCommand();
-
             switch (actionCommand){
                 case "FindByISBN"-> getBookByISBN();
                 default -> JOptionPane.showMessageDialog(null, "Unknown action command");
             }
         });
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String actionCommand = e.getActionCommand();
+                String title = tFTitle.getText();
+                String author = tFAuthor.getText();
+                String isbn = tFISBN.getText();
+                Book.Status status = comboStatus.getSelectedItem().toString().equals("available") ? Book.Status.AVAILABLE : Book.Status.ISSUED;
+
+
+//                new Book()
+                switch (actionCommand){
+//                    case "Add"-> BookDAOImplementation.addBook();
+                    default -> JOptionPane.showMessageDialog(null, "Unknown action command");
+                }
+            }
+        });
     }
 
     void initailSetup(){
+        setSize(new Dimension(800, 600));
+        add(mainPanel);
+        this.setLocationRelativeTo(MainFrame.this);
+        setVisible(true);
 
         // Get book for booksDOA
         Vector<Vector<Object>> books =  BookDAOImplementation.getAllBooks();
         fetchTableData(books);
 
-}
+}   void getDateAndTime() {
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss");
+        // Create a Timer that fires every 1000 milliseconds
+
+        Timer timer = new Timer(1000, new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              String time = LocalTime.now().format(timeFormatter);
+              String date = LocalDate.now().format(dateFormatter);
+              String day = LocalDate.now().getDayOfWeek().toString().toLowerCase();
+              String camelCaseDay = day.substring(0, 1).toUpperCase() + day.substring(1).toLowerCase();
+
+              dayAndDate.setText(time+ " | " + camelCaseDay + " | "+date);
+            }
+        });
+
+        // Start the timer
+        timer.start();
+    }
+
     void fetchTableData(Vector<Vector<Object>> books){
         // Got the books as Vector Object. which is thread safe.
 
@@ -75,10 +127,10 @@ public class MainFrame extends JFrame{
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
 
-        booksTable.getColumn("Title").setCellRenderer(leftRenderer);
+//        booksTable.getColumn("ID").setPreferredWidth(2);
 
         //Changed alignment of the records to center, Except the first two columns
-        for (int i = 2; i < booksTable.getColumnCount(); i++) {
+        for (int i = 1; i < booksTable.getColumnCount(); i++) {
             booksTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }

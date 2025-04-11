@@ -78,7 +78,7 @@ public class BookDAOImplementation {
             while (resultRows.next()) {
 
                 Vector<Object> book = new Vector<>();
-
+                String bookID = resultRows.getString("book_id");
                 String title = resultRows.getString("title");
                 String auth = resultRows.getString("author");
                 String isbn = resultRows.getString("isbn");
@@ -86,6 +86,7 @@ public class BookDAOImplementation {
                 String added_date = resultRows.getString("added_date");
 
                 //Creating the book vector
+//                book.add(bookID);
                 book.add(title);
                 book.add(auth);
                 book.add(isbn);
@@ -117,6 +118,7 @@ public class BookDAOImplementation {
 
             while (resultRows.next()) {
                 Vector<Object> book = new Vector<>();
+                String bookID = resultRows.getString("book_id");
                 String title = resultRows.getString("title");
                 String auth = resultRows.getString("author");
                 String isbn = resultRows.getString("isbn");
@@ -125,6 +127,7 @@ public class BookDAOImplementation {
 
 
                 // Adding a single book DATA to book ArrayList {name,auth,isbn,etc}
+//                book.add(bookID);
                 book.add(title);
                 book.add(auth);
                 book.add(isbn);

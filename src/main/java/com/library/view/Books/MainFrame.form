@@ -4,7 +4,9 @@
     <constraints>
       <xy x="20" y="20" width="654" height="402"/>
     </constraints>
-    <properties/>
+    <properties>
+      <preferredSize width="853" height="1058"/>
+    </properties>
     <border type="none"/>
     <children>
       <grid id="13eb5" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -25,7 +27,7 @@
               <size top="15" left="15" bottom="15" right="15"/>
             </border>
             <children>
-              <component id="84ad6" class="javax.swing.JLabel">
+              <component id="84ad6" class="javax.swing.JLabel" binding="GMtime">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -34,7 +36,7 @@
                   <text value="Good Moring"/>
                 </properties>
               </component>
-              <component id="90357" class="javax.swing.JLabel">
+              <component id="90357" class="javax.swing.JLabel" binding="dayAndDate">
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>

@@ -16,7 +16,8 @@ public class BookDAOImplementation {
 
     private static final Connection con = DatabaseConnection.getConnection();
 
-    public static boolean addBook(Book book) throws SQLNonTransientException, SQLIntegrityConstraintViolationException, SQLException {
+
+    public static boolean addBook(Book book) throws SQLNonTransientException , SQLIntegrityConstraintViolationException , SQLException{
         String title = book.getTitle();
         String author = book.getAuthor();
         String isbn = book.getIsbn();
@@ -24,6 +25,7 @@ public class BookDAOImplementation {
         String added_date = book.getDated_date().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         String query = "INSERT INTO BOOKS (title,author,isbn,status,added_date) VALUES (?,?,?,?,?)";
+
 
 
         PreparedStatement pstmt = con.prepareStatement(query);

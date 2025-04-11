@@ -56,8 +56,10 @@ public class MainFrame extends JFrame {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 String actionCommand = e.getActionCommand();
                 switch (actionCommand) {
+
                     case "Add" -> {
                         addBook();
                     }
@@ -75,6 +77,7 @@ public class MainFrame extends JFrame {
 
     // General Functions
     void initailSetup() {
+
         setSize(new Dimension(800, 600));
         add(mainPanel);
         this.setLocationRelativeTo(MainFrame.this);
@@ -82,6 +85,7 @@ public class MainFrame extends JFrame {
 
         // fetch current data from the db.
         fetchTableData();
+
 
     }
 
@@ -106,6 +110,30 @@ public class MainFrame extends JFrame {
         // Start the timer
         timer.start();
     }
+    void fetchTableData(){
+        String[] columnNames = {"Title","Author","ISBN","Status","Added Date"};
+        DefaultTableModel tableModel = new DefaultTableModel (columnNames,0);
+
+        Vector<Vector<Object>> books =  BookDAOImplementation.getAllBooks();
+        // Take each book and add it to the table model.
+        for(Vector<Object> row : books){
+            tableModel.addRow(row);
+
+        }
+
+        // setting the entire model to the table
+        booksTable.setModel(tableModel);
+
+        // Styling the table
+        booksTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+
+
 
     void fetchTableData() {
         String[] columnNames = {"Title", "Author", "ISBN", "Status", "Added Date"};
@@ -130,13 +158,13 @@ public class MainFrame extends JFrame {
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
 
-
         //Changed alignment of the records to center, Except the first two columns
         for (int i = 1; i < booksTable.getColumnCount(); i++) {
             booksTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 
     }
+
 
     void fetchTableData(Vector<Vector<Object>> books) {
 
@@ -147,7 +175,6 @@ public class MainFrame extends JFrame {
         // Take each book and add it to the table model.
         for (Vector<Object> row : books) {
             tableModel.addRow(row);
-
         }
 
         // setting the entire model to the table
@@ -225,6 +252,46 @@ public class MainFrame extends JFrame {
     }
 
     void resetAllTextFields() {
+        tFTitle.setText("");
+        tFAuthor.setText("");
+        tFISBN.setText("");
+        comboStatus.setSelectedIndex(0);
+    }
+    void addBook(){
+        String title = tFTitle.getText();
+        String author = tFAuthor.getText();
+        String isbn = tFISBN.getText();
+        Book.Status status = comboStatus.getSelectedItem().toString().equals("Available") ? Book.Status.AVAILABLE : Book.Status.ISSUED;
+        LocalDate date = LocalDate.now();
+
+        Book newBook = new Book(title,author,isbn,status,date);
+
+        try{
+            boolean isAdded = BookDAOImplementation.addBook(newBook);
+
+            if(isAdded){
+                JOptionPane.showMessageDialog(null, "Book added");
+                resetAllTextFields();
+                fetchTableData();
+                booksTable.revalidate();
+                booksTable.repaint();
+            }
+        }catch (SQLIntegrityConstraintViolationException e){
+            String message = e.getMessage().toString();
+            JOptionPane.showMessageDialog(this, message);
+            resetAllTextFields();
+        }
+        catch (SQLException e){
+            String message = e.getLocalizedMessage();
+            JOptionPane.showMessageDialog(this, message);
+            resetAllTextFields();
+        }
+
+
+
+    }
+
+    void resetAllTextFields(){
         tFTitle.setText("");
         tFAuthor.setText("");
         tFISBN.setText("");

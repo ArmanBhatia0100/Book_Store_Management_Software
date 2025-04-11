@@ -1,10 +1,11 @@
 package com.library.database;
 
 import com.library.model.Book;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  *
@@ -64,56 +65,84 @@ public class BookDAOImplementation {
 
     }
 
-    public static void getBookByID(int bookID) {
-        String query = "SELECT * FROM BOOKS WHERE bookID = (?)";
+    public static  Vector<Vector<Object>> getBookByISBN(String ISBN) {
+        String query = "SELECT * FROM BOOKS WHERE isbn like ?";
+
+        Vector<Vector<Object>> booksData = new Vector<Vector<Object>>();
 
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
-            pstmt.setInt(1, bookID);
+            pstmt.setString(1, "%" + ISBN + "%");
             ResultSet resultRows = pstmt.executeQuery();
 
-            System.out.printf("%-30s %-30s %-30s %-30s %-30s\n", "name", "auth", "isbn", "status", "added_date");
-            System.out.printf("%-150s\n", "-------------------------------------------------------------------------------------------------------------------");
-
             while (resultRows.next()) {
-                String name = resultRows.getString("title");
+
+                Vector<Object> book = new Vector<>();
+
+                String title = resultRows.getString("title");
                 String auth = resultRows.getString("author");
                 String isbn = resultRows.getString("isbn");
                 String status = resultRows.getString("status");
                 String added_date = resultRows.getString("added_date");
 
-                System.out.printf("%-30s %-30s %-30s %-30s %-30s\n", name, auth, isbn, status, added_date);
+                //Creating the book vector
+                book.add(title);
+                book.add(auth);
+                book.add(isbn);
+                book.add(status);
+                book.add(added_date);
+
+                //Adding book vector or vector of vector (Books)
+                booksData.add(book);
 
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return booksData;
     }
 
-    public static void getAllBooks() {
+    public static Vector<Vector<Object>> getAllBooks() {
+
         String query = "SELECT * FROM books";
 
+        Vector<Vector<Object>> booksData = new Vector<Vector<Object>>();
+
         try {
+
             PreparedStatement pstmt = con.prepareStatement(query);
             ResultSet resultRows = pstmt.executeQuery();
 
-            System.out.printf("%-30s %-30s %-30s %-30s %-30s\n", "name", "auth", "isbn", "status", "added_date");
-            System.out.printf("%-150s\n", "-----------------------------------------------------------------------------------------------------------------------------------");
 
             while (resultRows.next()) {
-                String name = resultRows.getString("title");
+                Vector<Object> book = new Vector<>();
+                String title = resultRows.getString("title");
                 String auth = resultRows.getString("author");
                 String isbn = resultRows.getString("isbn");
                 String status = resultRows.getString("status");
                 String added_date = resultRows.getString("added_date");
 
-                System.out.printf("%-30s %-30s %-30s %-30s %-30s\n", name, auth, isbn, status, added_date);
+
+                // Adding a single book DATA to book ArrayList {name,auth,isbn,etc}
+                book.add(title);
+                book.add(auth);
+                book.add(isbn);
+                book.add(status);
+                book.add(added_date);
+
+                // Adding a BOOK to the array of BOOKS
+                booksData.add(book);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return booksData;
+    }
+
+    public static void main(String[] args) {
+//        getBookByISBN("978-");
     }
 
     public static void updateStatus(int BookID, Book.Status status) {

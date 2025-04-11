@@ -3,6 +3,7 @@ package com.library.database;
 import com.library.model.Book;
 
 import java.sql.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -15,16 +16,16 @@ public class BookDAOImplementation {
 
     private static final Connection con = DatabaseConnection.getConnection();
 
-    public static void addBook(Book book) {
+    public static boolean addBook(Book book) throws SQLNonTransientException , SQLIntegrityConstraintViolationException , SQLException{
         String title = book.getTitle();
         String author = book.getAuthor();
         String isbn = book.getIsbn();
         String status = book.getStatus().toString();
-        String added_date = book.getDated_date().toString();
+        String added_date = book.getDated_date().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         String query = "INSERT INTO BOOKS (title,author,isbn,status,added_date) VALUES (?,?,?,?,?)";
 
-        try {
+
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, title);
             pstmt.setString(2, author);
@@ -36,16 +37,11 @@ public class BookDAOImplementation {
 
             if (rows > 0) {
                 System.out.println("Book added Successfully");
-            } else {
-                System.err.println("no book added");
+                return true;
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return false;
 
     }
-
     public static void deleteBook(int bookID) {
 
         String query = "DELETE FROM BOOKS WHERE bookID = (?)";

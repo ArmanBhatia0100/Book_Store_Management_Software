@@ -5,6 +5,7 @@ import com.library.model.Book;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  *
@@ -90,12 +91,13 @@ public class BookDAOImplementation {
         }
     }
 
-    public static ArrayList<ArrayList<String>> getAllBooks() {
+    public static Vector<Vector<Object>> getAllBooks() {
 
         String query = "SELECT * FROM books";
 
 
-        ArrayList<ArrayList<String>> books = new ArrayList<>();
+//        ArrayList<ArrayList<String>> books = new ArrayList<>();
+        Vector<Vector<Object>> booksData = new Vector<Vector<Object>>();
 
         try {
 
@@ -104,7 +106,7 @@ public class BookDAOImplementation {
 
 
             while (resultRows.next()) {
-                ArrayList<String> book = new ArrayList<>();
+                Vector<Object> book = new Vector<>();
                 String title = resultRows.getString("title");
                 String auth = resultRows.getString("author");
                 String isbn = resultRows.getString("isbn");
@@ -120,16 +122,15 @@ public class BookDAOImplementation {
                 book.add(added_date);
 
                 // Adding a BOOK to the array of BOOKS
-                books.add(book);
+                booksData.add(book);
 
-                //Clearing the array of book to store next book values
-                book.clear();
+
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return books;
+        return booksData;
     }
 
     public static void main(String[] args) {

@@ -21,7 +21,7 @@ import java.util.Vector;
 import java.time.LocalDate;
 
 
-public class MainFrame extends JFrame{
+public class MainFrame extends JFrame {
     private JButton bookManagementButton;
     private JPanel mainPanel;
     private JButton memberManagementButton;
@@ -42,22 +42,22 @@ public class MainFrame extends JFrame{
     private JLabel GMtime;
     private JLabel dayAndDate;
 
-    public MainFrame(){
+    public MainFrame() {
 
         initailSetup();
         getDateAndTime();
         findByISBNButton.addActionListener(e -> {
             String actionCommand = e.getActionCommand();
-            switch (actionCommand){
-                case "FindByISBN"-> getBookByISBN();
+            switch (actionCommand) {
+                case "FindByISBN" -> getBookByISBN();
                 default -> JOptionPane.showMessageDialog(null, "Unknown action command");
             }
         });
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               String actionCommand = e.getActionCommand();
-                switch (actionCommand){
+                String actionCommand = e.getActionCommand();
+                switch (actionCommand) {
                     case "Add" -> {
                         addBook();
                     }
@@ -65,10 +65,16 @@ public class MainFrame extends JFrame{
                 }
             }
         });
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteBookByISBN();
+            }
+        });
     }
 
     // General Functions
-    void initailSetup(){
+    void initailSetup() {
         setSize(new Dimension(800, 600));
         add(mainPanel);
         this.setLocationRelativeTo(MainFrame.this);
@@ -77,36 +83,37 @@ public class MainFrame extends JFrame{
         // fetch current data from the db.
         fetchTableData();
 
-}
+    }
+
     void getDateAndTime() {
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss");
         // Create a Timer that fires every 1000 milliseconds
 
-        Timer timer = new Timer(1000, new ActionListener()
-        {
+        Timer timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              String time = LocalTime.now().format(timeFormatter);
-              String date = LocalDate.now().format(dateFormatter);
-              String day = LocalDate.now().getDayOfWeek().toString().toLowerCase();
-              String camelCaseDay = day.substring(0, 1).toUpperCase() + day.substring(1).toLowerCase();
+                String time = LocalTime.now().format(timeFormatter);
+                String date = LocalDate.now().format(dateFormatter);
+                String day = LocalDate.now().getDayOfWeek().toString().toLowerCase();
+                String camelCaseDay = day.substring(0, 1).toUpperCase() + day.substring(1).toLowerCase();
 
-              dayAndDate.setText(time+ " | " + camelCaseDay + " | "+date);
+                dayAndDate.setText(time + " | " + camelCaseDay + " | " + date);
             }
         });
 
         // Start the timer
         timer.start();
     }
-    void fetchTableData(){
-        String[] columnNames = {"Title","Author","ISBN","Status","Added Date"};
-        DefaultTableModel tableModel = new DefaultTableModel (columnNames,0);
 
-        Vector<Vector<Object>> books =  BookDAOImplementation.getAllBooks();
+    void fetchTableData() {
+        String[] columnNames = {"Title", "Author", "ISBN", "Status", "Added Date"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+
+        Vector<Vector<Object>> books = BookDAOImplementation.getAllBooks();
         // Take each book and add it to the table model.
-        for(Vector<Object> row : books){
+        for (Vector<Object> row : books) {
             tableModel.addRow(row);
 
         }
@@ -130,22 +137,23 @@ public class MainFrame extends JFrame{
         }
 
     }
-    void fetchTableData(Vector<Vector<Object>> books){
+
+    void fetchTableData(Vector<Vector<Object>> books) {
 
         // Create table with no rows and just columnsNames
-        String[] columnNames = {"Title","Author","ISBN","Status","Added Date"};
-        DefaultTableModel tableModel = new DefaultTableModel (columnNames,0);
+        String[] columnNames = {"Title", "Author", "ISBN", "Status", "Added Date"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
-            // Take each book and add it to the table model.
-            for(Vector<Object> row : books){
-                tableModel.addRow(row);
+        // Take each book and add it to the table model.
+        for (Vector<Object> row : books) {
+            tableModel.addRow(row);
 
         }
 
-       // setting the entire model to the table
+        // setting the entire model to the table
         booksTable.setModel(tableModel);
 
-       // Styling the table
+        // Styling the table
         booksTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -162,47 +170,61 @@ public class MainFrame extends JFrame{
     }
 
     // Books based functions
-    void getBookByISBN(){
+    void getBookByISBN() {
         String ISBN = tFISBN.getText();
-       Vector<Vector<Object>> books =  BookDAOImplementation.getBookByISBN(ISBN);
-       fetchTableData(books);
+        Vector<Vector<Object>> books = BookDAOImplementation.getBookByISBN(ISBN);
+        fetchTableData(books);
 
     }
-    void addBook(){
+
+    void addBook() {
         String title = tFTitle.getText();
         String author = tFAuthor.getText();
         String isbn = tFISBN.getText();
         Book.Status status = comboStatus.getSelectedItem().toString().equals("Available") ? Book.Status.AVAILABLE : Book.Status.ISSUED;
         LocalDate date = LocalDate.now();
 
-        Book newBook = new Book(title,author,isbn,status,date);
+        Book newBook = new Book(title, author, isbn, status, date);
 
-        try{
+        try {
             boolean isAdded = BookDAOImplementation.addBook(newBook);
 
-            if(isAdded){
+            if (isAdded) {
                 JOptionPane.showMessageDialog(null, "Book added");
                 resetAllTextFields();
                 fetchTableData();
                 booksTable.revalidate();
                 booksTable.repaint();
             }
-        }catch (SQLIntegrityConstraintViolationException e){
+        } catch (SQLIntegrityConstraintViolationException e) {
             String message = e.getMessage().toString();
             JOptionPane.showMessageDialog(this, message);
             resetAllTextFields();
-        }
-        catch (SQLException e){
+        } catch (SQLException e) {
             String message = e.getLocalizedMessage();
             JOptionPane.showMessageDialog(this, message);
             resetAllTextFields();
         }
 
 
+    }
+
+    void deleteBookByISBN() {
+        String ISBN = tFISBN.getText();
+        boolean isDeleted = BookDAOImplementation.deleteBook(ISBN);
+
+        if (isDeleted) {
+            JOptionPane.showMessageDialog(null, "Book Deleted");
+            resetAllTextFields();
+            fetchTableData();
+          
+        } else {
+            JOptionPane.showMessageDialog(null, "NOT deleted");
+        }
 
     }
 
-    void resetAllTextFields(){
+    void resetAllTextFields() {
         tFTitle.setText("");
         tFAuthor.setText("");
         tFISBN.setText("");

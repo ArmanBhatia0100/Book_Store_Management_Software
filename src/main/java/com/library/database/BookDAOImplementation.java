@@ -2,6 +2,7 @@ package com.library.database;
 
 import com.library.model.Book;
 
+import javax.swing.*;
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -9,14 +10,13 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- *
  * @author arman
  */
 public class BookDAOImplementation {
 
     private static final Connection con = DatabaseConnection.getConnection();
 
-    public static boolean addBook(Book book) throws SQLNonTransientException , SQLIntegrityConstraintViolationException , SQLException{
+    public static boolean addBook(Book book) throws SQLNonTransientException, SQLIntegrityConstraintViolationException, SQLException {
         String title = book.getTitle();
         String author = book.getAuthor();
         String isbn = book.getIsbn();
@@ -26,42 +26,66 @@ public class BookDAOImplementation {
         String query = "INSERT INTO BOOKS (title,author,isbn,status,added_date) VALUES (?,?,?,?,?)";
 
 
-            PreparedStatement pstmt = con.prepareStatement(query);
-            pstmt.setString(1, title);
-            pstmt.setString(2, author);
-            pstmt.setString(3, isbn);
-            pstmt.setString(4, status);
-            pstmt.setString(5, added_date);
+        PreparedStatement pstmt = con.prepareStatement(query);
+        pstmt.setString(1, title);
+        pstmt.setString(2, author);
+        pstmt.setString(3, isbn);
+        pstmt.setString(4, status);
+        pstmt.setString(5, added_date);
 
-            int rows = pstmt.executeUpdate();
+        int rows = pstmt.executeUpdate();
 
-            if (rows > 0) {
-                System.out.println("Book added Successfully");
-                return true;
-            }
-            return false;
+        if (rows > 0) {
+            System.out.println("Book added Successfully");
+            return true;
+        }
+        return false;
 
     }
-    public static void deleteBook(int bookID) {
+
+    public static boolean deleteBook(String isbn) {
 
         String query = "DELETE FROM BOOKS WHERE bookID = (?)";
 
         try {
-            PreparedStatement pstmt = con.prepareStatement(query);
-            pstmt.setInt(1, bookID);
-            int resultRows = pstmt.executeUpdate();
+            String selectQuery = "SELECT book_id FROM BOOKS WHERE isbn = ?";
+            PreparedStatement pstmt = con.prepareStatement(selectQuery);
+            pstmt.setString(1, isbn);
+            ResultSet rs = pstmt.executeQuery();
 
-            if (resultRows > 0) {
-                System.out.println("Booked Deleted Successfully");
+            if (rs.next()) {
+                int bookId = rs.getInt("book_id");
+
+                // Step 2: Delete transactions associated with the book_id
+                String deleteTransactionsQuery = "DELETE FROM TRANSACTIONS WHERE book_id = ?";
+                pstmt = con.prepareStatement(deleteTransactionsQuery);
+                pstmt.setInt(1, bookId);
+                pstmt.executeUpdate();
+
+                // Step 3: Delete the book from BOOKS
+                String deleteBookQuery = "DELETE FROM BOOKS WHERE isbn = ?";
+                pstmt = con.prepareStatement(deleteBookQuery);
+                pstmt.setString(1, isbn);
+                int resultRows = pstmt.executeUpdate();
+
+                // Book found and deleted
+                if (resultRows > 0) {
+                    System.out.println("Book and related transactions deleted successfully");
+                    return true;
+                }
+                // Book not found
+                else {
+                    return false;
+                }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        return false;
     }
 
-    public static  Vector<Vector<Object>> getBookByISBN(String ISBN) {
+    public static Vector<Vector<Object>> getBookByISBN(String ISBN) {
         String query = "SELECT * FROM BOOKS WHERE isbn like ?";
 
         Vector<Vector<Object>> booksData = new Vector<Vector<Object>>();
@@ -142,6 +166,7 @@ public class BookDAOImplementation {
 
     public static void main(String[] args) {
 //        getBookByISBN("978-");
+
     }
 
     public static void updateStatus(int BookID, Book.Status status) {

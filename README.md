@@ -7,6 +7,9 @@
 
 Welcome to the **Library Management System**, a desktop application built by **Arman Bhatia** using **Java Swing** for an intuitive user interface and **JDBC** with **MySQL Connector/J** for robust database connectivity. This project simulates a real-world library, enabling efficient management of books, members, and borrowing/returning transactions, all structured with the **MVC architecture**.
 
+[Watch the project demo](https://youtu.be/qEgZxuKi8b4)
+
+[![Project Demo](assets/thumbnail.png)](https://www.youtube.com/watch?v=your-video-id)
 ---
 
 ## ✨ Features

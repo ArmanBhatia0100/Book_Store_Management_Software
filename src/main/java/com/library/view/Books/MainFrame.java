@@ -27,7 +27,6 @@ public class MainFrame extends JFrame {
     private JButton memberManagementButton;
     private JButton reportsButton;
     private JButton exportButton;
-    private JTextField tFBookID;
     private JTextField tFTitle;
     private JTextField tFAuthor;
     private JTextField tFISBN;
@@ -217,7 +216,7 @@ public class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(null, "Book Deleted");
             resetAllTextFields();
             fetchTableData();
-          
+
         } else {
             JOptionPane.showMessageDialog(null, "NOT deleted");
         }

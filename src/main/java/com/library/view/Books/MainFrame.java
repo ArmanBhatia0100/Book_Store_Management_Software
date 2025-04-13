@@ -2,6 +2,8 @@ package com.library.view.Books;
 
 import com.library.database.BookDAOImplementation;
 import com.library.model.Book;
+import com.library.services.BookService;
+import com.library.view.utils.DateTimeUpdater;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -11,14 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import javax.swing.Timer;
 import java.util.Vector;
-
-import java.time.LocalDate;
 
 
 public class MainFrame extends JFrame {
@@ -41,36 +36,18 @@ public class MainFrame extends JFrame {
     private JButton findByISBNButton;
     private JLabel GMtime;
     private JLabel dayAndDate;
+    private JTextField searchByTitleAuthorTextField;
+    private JButton searchButton;
+
+    // Class fields
+    private String title;
+    private String author;
+    private String isbn;
+    private Book.Status status;
+    private String[] columnNames = {"Title", "Author", "ISBN", "Status", "Added Date"};
 
     public MainFrame() {
-
         initailSetup();
-        getDateAndTime();
-        findByISBNButton.addActionListener(e -> {
-            String actionCommand = e.getActionCommand();
-            switch (actionCommand) {
-                case "FindByISBN" -> getBookByISBN();
-                default -> JOptionPane.showMessageDialog(null, "Unknown action command");
-            }
-        });
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String actionCommand = e.getActionCommand();
-                switch (actionCommand) {
-                    case "Add" -> {
-                        addBook();
-                    }
-                    default -> JOptionPane.showMessageDialog(null, "Unknown action command");
-                }
-            }
-        });
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deleteBookByISBN();
-            }
-        });
     }
 
     // General Functions
@@ -80,35 +57,42 @@ public class MainFrame extends JFrame {
         this.setLocationRelativeTo(MainFrame.this);
         setVisible(true);
 
+        getDateAndTime();
+
+        findByISBNButton.addActionListener(e -> {
+            getBookByISBN();
+        });
+
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addBook();
+            }
+        });
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteBookByISBN();
+            }
+        });
+
         // fetch current data from the db.
         fetchTableData();
 
     }
 
     void getDateAndTime() {
-
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss");
-        // Create a Timer that fires every 1000 milliseconds
-
         Timer timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String time = LocalTime.now().format(timeFormatter);
-                String date = LocalDate.now().format(dateFormatter);
-                String day = LocalDate.now().getDayOfWeek().toString().toLowerCase();
-                String camelCaseDay = day.substring(0, 1).toUpperCase() + day.substring(1).toLowerCase();
-
-                dayAndDate.setText(time + " | " + camelCaseDay + " | " + date);
+                dayAndDate.setText(DateTimeUpdater.getDateAndTime());
             }
         });
-
-        // Start the timer
         timer.start();
     }
 
     void fetchTableData() {
-        String[] columnNames = {"Title", "Author", "ISBN", "Status", "Added Date"};
+
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
         Vector<Vector<Object>> books = BookDAOImplementation.getAllBooks();
@@ -141,7 +125,6 @@ public class MainFrame extends JFrame {
     void fetchTableData(Vector<Vector<Object>> books) {
 
         // Create table with no rows and just columnsNames
-        String[] columnNames = {"Title", "Author", "ISBN", "Status", "Added Date"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
         // Take each book and add it to the table model.
@@ -178,35 +161,22 @@ public class MainFrame extends JFrame {
     }
 
     void addBook() {
-        String title = tFTitle.getText();
-        String author = tFAuthor.getText();
-        String isbn = tFISBN.getText();
-        Book.Status status = comboStatus.getSelectedItem().toString().equals("Available") ? Book.Status.AVAILABLE : Book.Status.ISSUED;
-        LocalDate date = LocalDate.now();
-
-        Book newBook = new Book(title, author, isbn, status, date);
+        title = tFTitle.getText();
+        author = tFAuthor.getText();
+        isbn = tFISBN.getText();
+        status = comboStatus.getSelectedItem().toString().equals("Available") ? Book.Status.AVAILABLE : Book.Status.ISSUED;
 
         try {
-            boolean isAdded = BookDAOImplementation.addBook(newBook);
-
+            boolean isAdded = BookService.addBook(title, author, isbn, status);
             if (isAdded) {
-                JOptionPane.showMessageDialog(null, "Book added");
-                resetAllTextFields();
-                fetchTableData();
-                booksTable.revalidate();
-                booksTable.repaint();
+                JOptionPane.showMessageDialog(null, "Book added successfully");
             }
         } catch (SQLIntegrityConstraintViolationException e) {
-            String message = e.getMessage().toString();
-            JOptionPane.showMessageDialog(this, message);
-            resetAllTextFields();
+            JOptionPane.showMessageDialog(null, e.getMessage().toString());
         } catch (SQLException e) {
-            String message = e.getLocalizedMessage();
-            JOptionPane.showMessageDialog(this, message);
-            resetAllTextFields();
+            JOptionPane.showMessageDialog(null, e.getMessage().toString());
         }
-
-
+        fetchTableData();
     }
 
     void deleteBookByISBN() {
@@ -217,7 +187,7 @@ public class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(null, "Book Deleted");
             resetAllTextFields();
             fetchTableData();
-          
+
         } else {
             JOptionPane.showMessageDialog(null, "NOT deleted");
         }

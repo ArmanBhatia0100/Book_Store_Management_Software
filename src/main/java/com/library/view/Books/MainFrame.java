@@ -9,8 +9,6 @@ import com.library.view.utils.DateTimeUpdater;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Vector;
@@ -71,13 +69,7 @@ public class MainFrame extends JFrame {
 
 
     void getDateAndTime() {
-        Timer timer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dayAndDate.setText(DateTimeUpdater.getDateAndTime());
-            }
-        });
-        timer.start();
+        DateTimeUpdater.startDateTimeUpdate(dayAndDate);
     }
 
     void fetchTableData() {
@@ -85,10 +77,16 @@ public class MainFrame extends JFrame {
         booksTable.setModel(new BooksTableUtil().createTableModel(columnNames));
     }
 
-    void fetchTableData(Vector<Vector<Object>> books) {
+    int fetchTableData(Vector<Vector<Object>> books) {
         // setting the entire model to the table
         booksTable.setModel(new BooksTableUtil().createTableModel(columnNames,
                 books));
+        if (booksTable.getModel().getRowCount() > 0) {
+            return 1;
+        }
+        return 0;
+
+
     }
 
     void setTableColumnStyles() {
@@ -108,7 +106,11 @@ public class MainFrame extends JFrame {
     // Books based functions
     void getBookByISBN() {
         String ISBN = tFISBN.getText();
-        fetchTableData(BookDAOImplementation.getBookByISBN(ISBN));
+        int row = fetchTableData(BookDAOImplementation.getBookByISBN(ISBN));
+
+        if (row < 1) {
+            showMessageBox("ISBN not found");
+        }
     }
 
     void addBook() {
@@ -131,6 +133,7 @@ public class MainFrame extends JFrame {
             showMessageBox(e.getMessage().toString());
         } finally {
             fetchTableData();
+            resetAllTextFields();
         }
     }
 
@@ -143,6 +146,7 @@ public class MainFrame extends JFrame {
             showMessageBox("Book Not Deleted");
         }
         fetchTableData();
+        resetAllTextFields();
     }
 
     void showMessageBox(String message) {

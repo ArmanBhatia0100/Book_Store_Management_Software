@@ -1,8 +1,6 @@
 package com.library.view.utils;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -21,5 +19,9 @@ public class DateTimeUpdater {
         String dateTimeString = (time + " | " + camelCaseDay + " | " + date);
 
         return dateTimeString;
+    }
+
+    public static void startDateTimeUpdate(JLabel label) {
+        new Timer(1000, e -> label.setText(getDateAndTime())).start();
     }
 }

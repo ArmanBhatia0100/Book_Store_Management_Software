@@ -2,11 +2,8 @@ package com.library.database;
 
 import com.library.model.Book;
 
-import javax.swing.*;
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 /**
@@ -86,13 +83,13 @@ public class BookDAOImplementation {
     }
 
     public static Vector<Vector<Object>> getBookByISBN(String ISBN) {
-        String query = "SELECT * FROM BOOKS WHERE isbn like ?";
+        String query = "SELECT * FROM BOOKS WHERE isbn = ?";
 
         Vector<Vector<Object>> booksData = new Vector<Vector<Object>>();
 
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
-            pstmt.setString(1, "%" + ISBN + "%");
+            pstmt.setString(1, ISBN);
             ResultSet resultRows = pstmt.executeQuery();
 
             while (resultRows.next()) {

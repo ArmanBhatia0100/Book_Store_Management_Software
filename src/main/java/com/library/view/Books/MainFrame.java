@@ -55,31 +55,20 @@ public class MainFrame extends JFrame {
         setSize(new Dimension(800, 600));
         add(mainPanel);
         this.setLocationRelativeTo(MainFrame.this);
-        setVisible(true);
-
         getDateAndTime();
-
-
-        findByISBNButton.addActionListener(e -> {
-            getBookByISBN();
-        });
-
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addBook();
-            }
-        });
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deleteBookByISBN();
-            }
-        });
-
-        // fetch current data from the db.
+        setupEventListeners();
         fetchTableData();
+        setTableColumnStyles();
+        setVisible(true);
     }
+
+    private void setupEventListeners() {
+        findByISBNButton.addActionListener(e -> getBookByISBN());
+        addButton.addActionListener(e -> addBook());
+        deleteButton.addActionListener(e -> deleteBookByISBN());
+        // Add searchButton listener if implemented
+    }
+
 
     void getDateAndTime() {
         Timer timer = new Timer(1000, new ActionListener() {
@@ -92,14 +81,14 @@ public class MainFrame extends JFrame {
     }
 
     void fetchTableData() {
-
-
         // setting the entire model to the table
         booksTable.setModel(new BooksTableUtil().createTableModel(columnNames));
+    }
 
-        // Styling the table
-        booksTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-
+    void fetchTableData(Vector<Vector<Object>> books) {
+        // setting the entire model to the table
+        booksTable.setModel(new BooksTableUtil().createTableModel(columnNames,
+                books));
     }
 
     void setTableColumnStyles() {
@@ -116,20 +105,10 @@ public class MainFrame extends JFrame {
         }
     }
 
-    void fetchTableData(Vector<Vector<Object>> books) {
-        // setting the entire model to the table
-        booksTable.setModel(new BooksTableUtil().createTableModel(columnNames,
-                books));
-
-        // Styling the table
-        setTableColumnStyles();
-    }
-
     // Books based functions
     void getBookByISBN() {
         String ISBN = tFISBN.getText();
-        Vector<Vector<Object>> books = BookDAOImplementation.getBookByISBN(ISBN);
-        fetchTableData(books);
+        fetchTableData(BookDAOImplementation.getBookByISBN(ISBN));
     }
 
     void addBook() {
@@ -137,7 +116,10 @@ public class MainFrame extends JFrame {
         author = tFAuthor.getText();
         isbn = tFISBN.getText();
         status = comboStatus.getSelectedItem().toString().equals("Available") ? Book.Status.AVAILABLE : Book.Status.ISSUED;
-
+        if (title.isEmpty() || author.isEmpty() || isbn.isEmpty()) {
+            showMessageBox("All Fields Must Be Filled");
+            return;
+        }
         try {
             boolean isAdded = BookService.addBook(title, author, isbn, status);
             if (isAdded) {

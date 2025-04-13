@@ -3,11 +3,11 @@ package com.library.view.Books;
 import com.library.database.BookDAOImplementation;
 import com.library.model.Book;
 import com.library.services.BookService;
+import com.library.view.utils.BooksTableUtil;
 import com.library.view.utils.DateTimeUpdater;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,6 +59,7 @@ public class MainFrame extends JFrame {
 
         getDateAndTime();
 
+
         findByISBNButton.addActionListener(e -> {
             getBookByISBN();
         });
@@ -78,7 +79,6 @@ public class MainFrame extends JFrame {
 
         // fetch current data from the db.
         fetchTableData();
-
     }
 
     void getDateAndTime() {
@@ -93,63 +93,36 @@ public class MainFrame extends JFrame {
 
     void fetchTableData() {
 
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-
-        Vector<Vector<Object>> books = BookDAOImplementation.getAllBooks();
-        // Take each book and add it to the table model.
-        for (Vector<Object> row : books) {
-            tableModel.addRow(row);
-
-        }
 
         // setting the entire model to the table
-        booksTable.setModel(tableModel);
+        booksTable.setModel(new BooksTableUtil().createTableModel(columnNames));
 
         // Styling the table
         booksTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
-        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
-
-
-        //Changed alignment of the records to center, Except the first two columns
-        for (int i = 1; i < booksTable.getColumnCount(); i++) {
-            booksTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-        }
 
     }
 
-    void fetchTableData(Vector<Vector<Object>> books) {
-
-        // Create table with no rows and just columnsNames
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-
-        // Take each book and add it to the table model.
-        for (Vector<Object> row : books) {
-            tableModel.addRow(row);
-
-        }
-
-        // setting the entire model to the table
-        booksTable.setModel(tableModel);
-
-        // Styling the table
+    void setTableColumnStyles() {
         booksTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
 
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
 
         //Changed alignment of the records to center, Except the first two columns
         for (int i = 1; i < booksTable.getColumnCount(); i++) {
             booksTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
+    }
+
+    void fetchTableData(Vector<Vector<Object>> books) {
+        // setting the entire model to the table
+        booksTable.setModel(new BooksTableUtil().createTableModel(columnNames,
+                books));
+
+        // Styling the table
+        setTableColumnStyles();
     }
 
     // Books based functions
@@ -157,7 +130,6 @@ public class MainFrame extends JFrame {
         String ISBN = tFISBN.getText();
         Vector<Vector<Object>> books = BookDAOImplementation.getBookByISBN(ISBN);
         fetchTableData(books);
-
     }
 
     void addBook() {
@@ -169,29 +141,30 @@ public class MainFrame extends JFrame {
         try {
             boolean isAdded = BookService.addBook(title, author, isbn, status);
             if (isAdded) {
-                JOptionPane.showMessageDialog(null, "Book added successfully");
+                showMessageBox("Book added successfully");
             }
         } catch (SQLIntegrityConstraintViolationException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage().toString());
+            showMessageBox(e.getMessage().toString());
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage().toString());
+            showMessageBox(e.getMessage().toString());
+        } finally {
+            fetchTableData();
+        }
+    }
+
+    void deleteBookByISBN() {
+        isbn = tFISBN.getText();
+        boolean isDeleted = BookDAOImplementation.deleteBook(isbn);
+        if (isDeleted) {
+            showMessageBox("Book deleted successfully");
+        } else {
+            showMessageBox("Book Not Deleted");
         }
         fetchTableData();
     }
 
-    void deleteBookByISBN() {
-        String ISBN = tFISBN.getText();
-        boolean isDeleted = BookDAOImplementation.deleteBook(ISBN);
-
-        if (isDeleted) {
-            JOptionPane.showMessageDialog(null, "Book Deleted");
-            resetAllTextFields();
-            fetchTableData();
-
-        } else {
-            JOptionPane.showMessageDialog(null, "NOT deleted");
-        }
-
+    void showMessageBox(String message) {
+        JOptionPane.showMessageDialog(null, message);
     }
 
     void resetAllTextFields() {

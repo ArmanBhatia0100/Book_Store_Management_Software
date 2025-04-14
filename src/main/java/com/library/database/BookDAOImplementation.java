@@ -2,11 +2,8 @@ package com.library.database;
 
 import com.library.model.Book;
 
-import javax.swing.*;
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 /**
@@ -15,6 +12,7 @@ import java.util.Vector;
 public class BookDAOImplementation {
 
     private static final Connection con = DatabaseConnection.getConnection();
+
 
     public static boolean addBook(Book book) throws SQLNonTransientException, SQLIntegrityConstraintViolationException, SQLException {
         String title = book.getTitle();
@@ -85,18 +83,22 @@ public class BookDAOImplementation {
         return false;
     }
 
-    public static Vector<Vector<Object>> getBookByISBN(String ISBN) {
-        String query = "SELECT * FROM BOOKS WHERE isbn like ?";
+    public static Vector<Vector<Object>> findBook(String bookInfo) {
+
 
         Vector<Vector<Object>> booksData = new Vector<Vector<Object>>();
 
         try {
+            //find by title
+            String query = "SELECT * FROM BOOKS WHERE isbn like ? OR title like ? OR author like ? OR isbn like ?";
             PreparedStatement pstmt = con.prepareStatement(query);
-            pstmt.setString(1, "%" + ISBN + "%");
+            pstmt.setString(1, "%" + bookInfo + "%");
+            pstmt.setString(2, "%" + bookInfo + "%");
+            pstmt.setString(3, "%" + bookInfo + "%");
+            pstmt.setString(4, "%" + bookInfo + "%");
             ResultSet resultRows = pstmt.executeQuery();
-
+            
             while (resultRows.next()) {
-
                 Vector<Object> book = new Vector<>();
                 String bookID = resultRows.getString("book_id");
                 String title = resultRows.getString("title");
@@ -104,7 +106,6 @@ public class BookDAOImplementation {
                 String isbn = resultRows.getString("isbn");
                 String status = resultRows.getString("status");
                 String added_date = resultRows.getString("added_date");
-
                 //Creating the book vector
 //                book.add(bookID);
                 book.add(title);
@@ -112,11 +113,11 @@ public class BookDAOImplementation {
                 book.add(isbn);
                 book.add(status);
                 book.add(added_date);
-
                 //Adding book vector or vector of vector (Books)
                 booksData.add(book);
-
             }
+
+            return booksData;
 
         } catch (SQLException e) {
             e.printStackTrace();

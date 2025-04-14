@@ -1,24 +1,16 @@
 package com.library.view.Books;
 
-import com.library.database.BookDAOImplementation;
 import com.library.model.Book;
+import com.library.services.BookService;
+import com.library.view.utils.BooksTableUtil;
+import com.library.view.utils.DateTimeUpdater;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import javax.swing.Timer;
 import java.util.Vector;
-
-import java.time.LocalDate;
 
 
 public class MainFrame extends JFrame {
@@ -40,127 +32,68 @@ public class MainFrame extends JFrame {
     private JButton findByISBNButton;
     private JLabel GMtime;
     private JLabel dayAndDate;
+    private JTextField tFSearch;
+    private JButton searchButton;
+
+    // Class fields
+    private String title;
+    private String author;
+    private String isbn;
+    private Book.Status status;
+    private String[] columnNames = {"Title", "Author", "ISBN", "Status", "Added Date"};
 
     public MainFrame() {
-
         initailSetup();
-        getDateAndTime();
-        findByISBNButton.addActionListener(e -> {
-            String actionCommand = e.getActionCommand();
-            switch (actionCommand) {
-                case "FindByISBN" -> getBookByISBN();
-                default -> JOptionPane.showMessageDialog(null, "Unknown action command");
-            }
-        });
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String actionCommand = e.getActionCommand();
-                switch (actionCommand) {
-                    case "Add" -> {
-                        addBook();
-                    }
-                    default -> JOptionPane.showMessageDialog(null, "Unknown action command");
-                }
-            }
-        });
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deleteBookByISBN();
-            }
-        });
     }
 
-    // General Functions
     void initailSetup() {
         setSize(new Dimension(800, 600));
         add(mainPanel);
         this.setLocationRelativeTo(MainFrame.this);
+        getDateAndTime();
+        setupEventListeners();
+        fetchTableData();
+        setTableColumnStyles();
         setVisible(true);
 
-        // fetch current data from the db.
-        fetchTableData();
+        //Table setup
+        booksTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    }
 
+    private void setupEventListeners() {
+        searchButton.addActionListener(e -> findBook());
+        addButton.addActionListener(e -> addBook());
+        deleteButton.addActionListener(e -> deleteSectedBook());
     }
 
     void getDateAndTime() {
-
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss");
-        // Create a Timer that fires every 1000 milliseconds
-
-        Timer timer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String time = LocalTime.now().format(timeFormatter);
-                String date = LocalDate.now().format(dateFormatter);
-                String day = LocalDate.now().getDayOfWeek().toString().toLowerCase();
-                String camelCaseDay = day.substring(0, 1).toUpperCase() + day.substring(1).toLowerCase();
-
-                dayAndDate.setText(time + " | " + camelCaseDay + " | " + date);
-            }
-        });
-
-        // Start the timer
-        timer.start();
+        DateTimeUpdater.startDateTimeUpdate(dayAndDate);
     }
 
     void fetchTableData() {
-        String[] columnNames = {"Title", "Author", "ISBN", "Status", "Added Date"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-
-        Vector<Vector<Object>> books = BookDAOImplementation.getAllBooks();
-        // Take each book and add it to the table model.
-        for (Vector<Object> row : books) {
-            tableModel.addRow(row);
-
-        }
-
         // setting the entire model to the table
-        booksTable.setModel(tableModel);
+        booksTable.setModel(new BooksTableUtil().createTableModel(columnNames));
+    }
 
-        // Styling the table
-        booksTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
-        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
-
-
-        //Changed alignment of the records to center, Except the first two columns
-        for (int i = 1; i < booksTable.getColumnCount(); i++) {
-            booksTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+    int fetchTableData(Vector<Vector<Object>> books) {
+        // setting the entire model to the table
+        booksTable.setModel(new BooksTableUtil().createTableModel(columnNames,
+                books));
+        if (booksTable.getModel().getRowCount() > 0) {
+            return 1;
         }
+        return 0;
+
 
     }
 
-    void fetchTableData(Vector<Vector<Object>> books) {
-
-        // Create table with no rows and just columnsNames
-        String[] columnNames = {"Title", "Author", "ISBN", "Status", "Added Date"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-
-        // Take each book and add it to the table model.
-        for (Vector<Object> row : books) {
-            tableModel.addRow(row);
-
-        }
-
-        // setting the entire model to the table
-        booksTable.setModel(tableModel);
-
-        // Styling the table
+    void setTableColumnStyles() {
         booksTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
-
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
 
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
 
         //Changed alignment of the records to center, Except the first two columns
         for (int i = 1; i < booksTable.getColumnCount(); i++) {
@@ -169,58 +102,81 @@ public class MainFrame extends JFrame {
     }
 
     // Books based functions
-    void getBookByISBN() {
-        String ISBN = tFISBN.getText();
-        Vector<Vector<Object>> books = BookDAOImplementation.getBookByISBN(ISBN);
-        fetchTableData(books);
+    void findBook() {
+        String bookInfo = tFSearch.getText();
+        Vector<Vector<Object>> books = BookService.findBook(bookInfo);
 
-    }
+        int row = books.size();
 
-    void addBook() {
-        String title = tFTitle.getText();
-        String author = tFAuthor.getText();
-        String isbn = tFISBN.getText();
-        Book.Status status = comboStatus.getSelectedItem().toString().equals("Available") ? Book.Status.AVAILABLE : Book.Status.ISSUED;
-        LocalDate date = LocalDate.now();
-
-        Book newBook = new Book(title, author, isbn, status, date);
-
-        try {
-            boolean isAdded = BookDAOImplementation.addBook(newBook);
-
-            if (isAdded) {
-                JOptionPane.showMessageDialog(null, "Book added");
-                resetAllTextFields();
-                fetchTableData();
-                booksTable.revalidate();
-                booksTable.repaint();
-            }
-        } catch (SQLIntegrityConstraintViolationException e) {
-            String message = e.getMessage().toString();
-            JOptionPane.showMessageDialog(this, message);
-            resetAllTextFields();
-        } catch (SQLException e) {
-            String message = e.getLocalizedMessage();
-            JOptionPane.showMessageDialog(this, message);
-            resetAllTextFields();
-        }
-
-
-    }
-
-    void deleteBookByISBN() {
-        String ISBN = tFISBN.getText();
-        boolean isDeleted = BookDAOImplementation.deleteBook(ISBN);
-
-        if (isDeleted) {
-            JOptionPane.showMessageDialog(null, "Book Deleted");
+        if (row > 0) {
+            fetchTableData(books);
+        } else {
+            showMessageBox("Book not found");
             resetAllTextFields();
             fetchTableData();
 
-        } else {
-            JOptionPane.showMessageDialog(null, "NOT deleted");
         }
 
+    }
+
+    void deleteSectedBook() {
+        String isbn = getSelectedRow();
+        if (isbn != null) {
+            boolean isDeleted = BookService.deleteSelectedBook(isbn);
+            if (isDeleted) {
+                showMessageBox("Book deleted successfully");
+            } else {
+                showMessageBox("Book Not Deleted");
+            }
+            fetchTableData();
+        } else {
+            showMessageBox("Select a Book from the table");
+        }
+    }
+
+    void addBook() {
+        title = tFTitle.getText();
+        author = tFAuthor.getText();
+        isbn = tFISBN.getText();
+        status = comboStatus.getSelectedItem().toString().equals("Available") ? Book.Status.AVAILABLE : Book.Status.ISSUED;
+
+        // Fields must not be empty; show dialog if they are empty
+        if (title.isEmpty() || author.isEmpty() || isbn.isEmpty()) {
+            showMessageBox("All Fields Must Be Filled");
+            return;
+        }
+
+        // Adding books to the backend
+        try {
+            boolean isAdded = BookService.addBook(title, author, isbn, status);
+            if (isAdded) {
+                showMessageBox("Book added successfully");
+            }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            showMessageBox(e.getMessage().toString());
+        } catch (SQLException e) {
+            showMessageBox(e.getMessage().toString());
+        } finally {
+            fetchTableData();
+            resetAllTextFields();
+        }
+    }
+
+    void showMessageBox(String message) {
+        JOptionPane.showMessageDialog(null, message);
+    }
+
+    String getSelectedRow() {
+        int row = booksTable.getSelectedRow();
+        if (row >= 0) {
+            //get the ISBN
+            String ISBN = (String) booksTable.getValueAt(row, 2);
+            //return the ISBN
+            return ISBN;
+
+        } else {
+            return null;
+        }
     }
 
     void resetAllTextFields() {

@@ -6,9 +6,9 @@ package com.library;
 import com.formdev.flatlaf.IntelliJTheme;
 import com.library.view.Books.MainFrame;
 
-import java.io.InputStream;
+import javax.swing.*;
+
 import java.sql.SQLException;
-import javax.swing.SwingUtilities;
 
 /**
  * @author arman
@@ -19,12 +19,8 @@ public class Advance_library_management_system {
         SwingUtilities.invokeLater(new Runnable() {
                                        @Override
                                        public void run() {
-                                           InputStream stream = Advance_library_management_system.class.getResourceAsStream("/DeepOcean.theme.json");
-                                           if (stream == null) {
-                                               System.err.println("Theme file not found!");
-                                           } else {
-                                               IntelliJTheme.setup(stream);
-                                           }
+                                           IntelliJTheme.setup(Advance_library_management_system.class.getResourceAsStream(
+                                                   "/DeepOcean.theme.json"));
                                            new MainFrame();
                                        }
                                    }

@@ -1,6 +1,5 @@
 package com.library.view.Books;
 
-import com.library.database.BookDAOImplementation;
 import com.library.model.Book;
 import com.library.services.BookService;
 import com.library.view.utils.BooksTableUtil;
@@ -20,7 +19,6 @@ public class MainFrame extends JFrame {
     private JButton memberManagementButton;
     private JButton reportsButton;
     private JButton exportButton;
-    private JTextField tFBookID;
     private JTextField tFTitle;
     private JTextField tFAuthor;
     private JTextField tFISBN;
@@ -66,7 +64,6 @@ public class MainFrame extends JFrame {
         searchButton.addActionListener(e -> findBook());
         addButton.addActionListener(e -> addBook());
         deleteButton.addActionListener(e -> deleteSectedBook());
-
     }
 
     void getDateAndTime() {
@@ -107,13 +104,19 @@ public class MainFrame extends JFrame {
     // Books based functions
     void findBook() {
         String bookInfo = tFSearch.getText();
-        int row = fetchTableData(BookDAOImplementation.findBook(bookInfo));
+        Vector<Vector<Object>> books = BookService.findBook(bookInfo);
 
-        if (row < 1) {
+        int row = books.size();
+
+        if (row > 0) {
+            fetchTableData(books);
+        } else {
             showMessageBox("Book not found");
             resetAllTextFields();
             fetchTableData();
+
         }
+
     }
 
     void deleteSectedBook() {
@@ -136,10 +139,14 @@ public class MainFrame extends JFrame {
         author = tFAuthor.getText();
         isbn = tFISBN.getText();
         status = comboStatus.getSelectedItem().toString().equals("Available") ? Book.Status.AVAILABLE : Book.Status.ISSUED;
+
+        // Fields must not be empty; show dialog if they are empty
         if (title.isEmpty() || author.isEmpty() || isbn.isEmpty()) {
             showMessageBox("All Fields Must Be Filled");
             return;
         }
+
+        // Adding books to the backend
         try {
             boolean isAdded = BookService.addBook(title, author, isbn, status);
             if (isAdded) {
@@ -155,15 +162,12 @@ public class MainFrame extends JFrame {
         }
     }
 
-
     void showMessageBox(String message) {
         JOptionPane.showMessageDialog(null, message);
     }
 
     String getSelectedRow() {
-
         int row = booksTable.getSelectedRow();
-
         if (row >= 0) {
             //get the ISBN
             String ISBN = (String) booksTable.getValueAt(row, 2);

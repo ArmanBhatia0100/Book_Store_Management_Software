@@ -48,7 +48,6 @@ public class MainFrame extends JFrame {
         initailSetup();
     }
 
-    // General Functions
     void initailSetup() {
         setSize(new Dimension(800, 600));
         add(mainPanel);
@@ -69,7 +68,6 @@ public class MainFrame extends JFrame {
         deleteButton.addActionListener(e -> deleteSectedBook());
 
     }
-
 
     void getDateAndTime() {
         DateTimeUpdater.startDateTimeUpdate(dayAndDate);
@@ -112,7 +110,24 @@ public class MainFrame extends JFrame {
         int row = fetchTableData(BookDAOImplementation.findBook(bookInfo));
 
         if (row < 1) {
-            showMessageBox("ISBN not found");
+            showMessageBox("Book not found");
+            resetAllTextFields();
+            fetchTableData();
+        }
+    }
+
+    void deleteSectedBook() {
+        String isbn = getSelectedRow();
+        if (isbn != null) {
+            boolean isDeleted = BookService.deleteSelectedBook(isbn);
+            if (isDeleted) {
+                showMessageBox("Book deleted successfully");
+            } else {
+                showMessageBox("Book Not Deleted");
+            }
+            fetchTableData();
+        } else {
+            showMessageBox("Select a Book from the table");
         }
     }
 
@@ -140,28 +155,12 @@ public class MainFrame extends JFrame {
         }
     }
 
-    void deleteSectedBook() {
-        isbn = SelectBookfromTable();
-        if (isbn != null) {
-            boolean isDeleted = BookDAOImplementation.deleteBook(isbn);
-            if (isDeleted) {
-                showMessageBox("Book deleted successfully");
-            } else {
-                showMessageBox("Book Not Deleted");
-            }
-            fetchTableData();
-        } else {
-            showMessageBox("Select a Book from the table");
-        }
-
-
-    }
 
     void showMessageBox(String message) {
         JOptionPane.showMessageDialog(null, message);
     }
 
-    String SelectBookfromTable() {
+    String getSelectedRow() {
 
         int row = booksTable.getSelectedRow();
 

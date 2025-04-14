@@ -3,7 +3,6 @@ package com.library.services;
 import com.library.database.BookDAOImplementation;
 import com.library.model.Book;
 
-import javax.swing.*;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
@@ -27,17 +26,12 @@ public class BookService {
         return BookDAOImplementation.addBook(newBook);
     }
 
-    void deleteBookByISBN(String ISBN) {
-
-        boolean isDeleted = BookDAOImplementation.deleteBook(ISBN);
-
-        if (isDeleted) {
-            JOptionPane.showMessageDialog(null, "Book Deleted");
-
-        } else {
-            JOptionPane.showMessageDialog(null, "NOT deleted");
+    public static boolean deleteSelectedBook(String isbn) {
+        boolean isDeleted = false;
+        if (isbn != null) {
+            isDeleted = BookDAOImplementation.deleteBook(isbn);
         }
-
+        return isDeleted;
     }
 
 }

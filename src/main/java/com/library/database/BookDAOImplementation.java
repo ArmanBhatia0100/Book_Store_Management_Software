@@ -98,28 +98,31 @@ public class BookDAOImplementation {
             pstmt.setString(4, "%" + bookInfo + "%");
             ResultSet resultRows = pstmt.executeQuery();
 
-            while (resultRows.next()) {
+            if (resultRows.next()) {
+                while (resultRows.next()) {
+                    Vector<Object> book = new Vector<>();
+                    String bookID = resultRows.getString("book_id");
+                    String title = resultRows.getString("title");
+                    String auth = resultRows.getString("author");
+                    String isbn = resultRows.getString("isbn");
+                    String status = resultRows.getString("status");
+                    String added_date = resultRows.getString("added_date");
 
-                Vector<Object> book = new Vector<>();
-                String bookID = resultRows.getString("book_id");
-                String title = resultRows.getString("title");
-                String auth = resultRows.getString("author");
-                String isbn = resultRows.getString("isbn");
-                String status = resultRows.getString("status");
-                String added_date = resultRows.getString("added_date");
-
-                //Creating the book vector
+                    //Creating the book vector
 //                book.add(bookID);
-                book.add(title);
-                book.add(auth);
-                book.add(isbn);
-                book.add(status);
-                book.add(added_date);
+                    book.add(title);
+                    book.add(auth);
+                    book.add(isbn);
+                    book.add(status);
+                    book.add(added_date);
 
-                //Adding book vector or vector of vector (Books)
-                booksData.add(book);
-
+                    //Adding book vector or vector of vector (Books)
+                    booksData.add(book);
+                }
+            } else {
+                return null;
             }
+
 
         } catch (SQLException e) {
             e.printStackTrace();

@@ -34,7 +34,7 @@ public class MainFrame extends JFrame {
     private JButton findByISBNButton;
     private JLabel GMtime;
     private JLabel dayAndDate;
-    private JTextField searchByTitleAuthorTextField;
+    private JTextField tFSearch;
     private JButton searchButton;
 
     // Class fields
@@ -61,9 +61,10 @@ public class MainFrame extends JFrame {
     }
 
     private void setupEventListeners() {
-        findByISBNButton.addActionListener(e -> getBookByISBN());
+        searchButton.addActionListener(e -> findBook());
         addButton.addActionListener(e -> addBook());
         deleteButton.addActionListener(e -> deleteBookByISBN());
+        searchButton.addActionListener(e -> searchBook());
         // Add searchButton listener if implemented
     }
 
@@ -103,10 +104,15 @@ public class MainFrame extends JFrame {
         }
     }
 
+    void searchBook() {
+        tFSearch.getText().trim();
+        // find by Title
+    }
+
     // Books based functions
-    void getBookByISBN() {
-        String ISBN = tFISBN.getText();
-        int row = fetchTableData(BookDAOImplementation.getBookByISBN(ISBN));
+    void findBook() {
+        String bookInfo = tFSearch.getText();
+        int row = fetchTableData(BookDAOImplementation.findBook(bookInfo));
 
         if (row < 1) {
             showMessageBox("ISBN not found");

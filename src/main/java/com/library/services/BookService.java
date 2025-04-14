@@ -7,14 +7,13 @@ import javax.swing.*;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Vector;
 
 public class BookService {
 
     // Books based functions
     public static void getBookByISBN(String ISBN) {
-        Vector<Vector<Object>> books = BookDAOImplementation.getBookByISBN(ISBN);
+        Vector<Vector<Object>> books = BookDAOImplementation.findBook(ISBN);
     }
 
     public static boolean addBook(String title, String author, String ISBN, Book.Status status) throws SQLIntegrityConstraintViolationException, SQLException {

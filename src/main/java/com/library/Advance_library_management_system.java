@@ -5,13 +5,11 @@ package com.library;
 
 import com.formdev.flatlaf.IntelliJTheme;
 import com.library.view.Books.MainFrame;
-import com.library.view.Books.MainGUI;
 
+import javax.swing.*;
 import java.sql.SQLException;
-import javax.swing.SwingUtilities;
 
 /**
- *
  * @author arman
  */
 public class Advance_library_management_system {
@@ -19,13 +17,13 @@ public class Advance_library_management_system {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
         SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                IntelliJTheme.setup(Advance_library_management_system.class.getResourceAsStream(
-                        "/DeepOcean.theme.json"));
-                new MainFrame();
-            }
-        }
+                                       @Override
+                                       public void run() {
+                                           IntelliJTheme.setup(Advance_library_management_system.class.getResourceAsStream(
+                                                   "/DeepOcean.theme.json"));
+                                           new MainFrame();
+                                       }
+                                   }
         );
 
 //        BookDAOImplementation BI = new BookDAOImplementation();

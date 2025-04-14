@@ -2,11 +2,8 @@ package com.library.database;
 
 import com.library.model.Book;
 
-import javax.swing.*;
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 /**
@@ -17,7 +14,7 @@ public class BookDAOImplementation {
     private static final Connection con = DatabaseConnection.getConnection();
 
 
-    public static boolean addBook(Book book) throws SQLNonTransientException , SQLIntegrityConstraintViolationException , SQLException{
+    public static boolean addBook(Book book) throws SQLNonTransientException, SQLIntegrityConstraintViolationException, SQLException {
         String title = book.getTitle();
         String author = book.getAuthor();
         String isbn = book.getIsbn();
@@ -25,7 +22,6 @@ public class BookDAOImplementation {
         String added_date = book.getDated_date().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         String query = "INSERT INTO BOOKS (title,author,isbn,status,added_date) VALUES (?,?,?,?,?)";
-
 
 
         PreparedStatement pstmt = con.prepareStatement(query);
@@ -87,14 +83,19 @@ public class BookDAOImplementation {
         return false;
     }
 
-    public static Vector<Vector<Object>> getBookByISBN(String ISBN) {
-        String query = "SELECT * FROM BOOKS WHERE isbn like ?";
+    public static Vector<Vector<Object>> findBook(String bookInfo) {
+
 
         Vector<Vector<Object>> booksData = new Vector<Vector<Object>>();
 
         try {
+            //find by title
+            String query = "SELECT * FROM BOOKS WHERE isbn like ? OR title like ? OR author like ? OR isbn like ?";
             PreparedStatement pstmt = con.prepareStatement(query);
-            pstmt.setString(1, "%" + ISBN + "%");
+            pstmt.setString(1, "%" + bookInfo + "%");
+            pstmt.setString(2, "%" + bookInfo + "%");
+            pstmt.setString(3, "%" + bookInfo + "%");
+            pstmt.setString(4, "%" + bookInfo + "%");
             ResultSet resultRows = pstmt.executeQuery();
 
             while (resultRows.next()) {

@@ -173,6 +173,7 @@ public class MainFrame extends JFrame {
             String ISBN = (String) booksTable.getValueAt(row, 2);
             //return the ISBN
             return ISBN;
+
         } else {
             return null;
         }

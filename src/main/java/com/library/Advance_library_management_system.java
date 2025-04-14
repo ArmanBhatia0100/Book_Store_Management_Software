@@ -7,6 +7,7 @@ import com.formdev.flatlaf.IntelliJTheme;
 import com.library.view.Books.MainFrame;
 
 import javax.swing.*;
+
 import java.sql.SQLException;
 
 /**
@@ -15,7 +16,6 @@ import java.sql.SQLException;
 public class Advance_library_management_system {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-
         SwingUtilities.invokeLater(new Runnable() {
                                        @Override
                                        public void run() {

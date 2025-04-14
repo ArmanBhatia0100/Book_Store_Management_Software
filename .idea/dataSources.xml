@@ -12,6 +12,8 @@
         <property name="com.intellij.clouds.kubernetes.db.container.port" />
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
+      <keep-alive enable="true" timeout="300" />
+      <auto-close enable="true" timeout="1000" />
     </data-source>
   </component>
 </project>

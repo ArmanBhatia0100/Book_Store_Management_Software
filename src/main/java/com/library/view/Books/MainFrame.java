@@ -58,14 +58,16 @@ public class MainFrame extends JFrame {
         fetchTableData();
         setTableColumnStyles();
         setVisible(true);
+
+        //Table setup
+        booksTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
     private void setupEventListeners() {
         searchButton.addActionListener(e -> findBook());
         addButton.addActionListener(e -> addBook());
-        deleteButton.addActionListener(e -> deleteBookByISBN());
-        searchButton.addActionListener(e -> searchBook());
-        // Add searchButton listener if implemented
+        deleteButton.addActionListener(e -> deleteSectedBook());
+
     }
 
 
@@ -104,11 +106,6 @@ public class MainFrame extends JFrame {
         }
     }
 
-    void searchBook() {
-        tFSearch.getText().trim();
-        // find by Title
-    }
-
     // Books based functions
     void findBook() {
         String bookInfo = tFSearch.getText();
@@ -143,20 +140,39 @@ public class MainFrame extends JFrame {
         }
     }
 
-    void deleteBookByISBN() {
-        isbn = tFISBN.getText();
-        boolean isDeleted = BookDAOImplementation.deleteBook(isbn);
-        if (isDeleted) {
-            showMessageBox("Book deleted successfully");
+    void deleteSectedBook() {
+        isbn = SelectBookfromTable();
+        if (isbn != null) {
+            boolean isDeleted = BookDAOImplementation.deleteBook(isbn);
+            if (isDeleted) {
+                showMessageBox("Book deleted successfully");
+            } else {
+                showMessageBox("Book Not Deleted");
+            }
+            fetchTableData();
         } else {
-            showMessageBox("Book Not Deleted");
+            showMessageBox("Select a Book from the table");
         }
-        fetchTableData();
-        resetAllTextFields();
+
+
     }
 
     void showMessageBox(String message) {
         JOptionPane.showMessageDialog(null, message);
+    }
+
+    String SelectBookfromTable() {
+
+        int row = booksTable.getSelectedRow();
+
+        if (row >= 0) {
+            //get the ISBN
+            String ISBN = (String) booksTable.getValueAt(row, 2);
+            //return the ISBN
+            return ISBN;
+        } else {
+            return null;
+        }
     }
 
     void resetAllTextFields() {

@@ -43,7 +43,7 @@
                 </constraints>
                 <properties>
                   <font name="Segoe UI" size="18"/>
-                  <text value="23rd Dec, 2024 | Thursday"/>
+                  <text value=""/>
                 </properties>
               </component>
               <grid id="78955" layout-manager="FlowLayout" hgap="0" vgap="5" flow-align="0">

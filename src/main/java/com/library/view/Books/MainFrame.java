@@ -2,9 +2,10 @@ package com.library.view.Books;
 
 import com.library.controller.BookController;
 import com.library.model.Book;
-import com.library.view.utils.DateTimeUpdater;
-import com.library.view.utils.InputValidator;
-import com.library.view.utils.JOptionsUtils;
+import com.library.utils.BooksPageUtils.DateTimeUpdater;
+import com.library.utils.BooksPageUtils.FileChooser;
+import com.library.utils.BooksPageUtils.InputValidator;
+import com.library.utils.BooksPageUtils.JOptionsUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,6 +41,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         initialSetup();
+
     }
 
     private void initialSetup() {
@@ -47,7 +49,7 @@ public class MainFrame extends JFrame {
         add(mainPanel);
         this.setLocationRelativeTo(MainFrame.this);
 
-        DateTimeUpdater.getDateAndTime();
+        DateTimeUpdater.startDateTimeUpdate(dayAndDate);
         setupEventListeners();
 
         BookController.BooksTableUtil.fetchTableData(booksTable);
@@ -60,6 +62,7 @@ public class MainFrame extends JFrame {
         searchButton.addActionListener(e -> findBook());
         addButton.addActionListener(e -> addBook());
         deleteBookButton.addActionListener(e -> deleteSelectedBook());
+        PDFButton.addActionListener(e -> FileChooser.getPDFFilePath(booksTable));
     }
 
     private void findBook() {

@@ -1,4 +1,4 @@
-package com.library.view.utils;
+package com.library.utils.BooksPageUtils;
 
 import javax.swing.*;
 

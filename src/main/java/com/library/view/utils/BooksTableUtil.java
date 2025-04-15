@@ -26,5 +26,4 @@ public class BooksTableUtil {
         return tableModel;
     }
 
-
 }

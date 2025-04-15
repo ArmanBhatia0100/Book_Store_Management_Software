@@ -69,13 +69,11 @@ public class MainFrame extends JFrame {
         String bookInfo = tFSearch.getText();
         Vector<Vector<Object>> books = BookController.findBook(bookInfo);
 
-        if (!books.isEmpty()) {
+        if (books.size() > 0) {
             BookController.BooksTableUtil.fetchTableData(booksTable, books);
         } else {
             JOptionsUtils.showMessageBox("Book not found");
         }
-
-        refreshTableAndClearFields();
     }
 
     private void deleteSelectedBook() {

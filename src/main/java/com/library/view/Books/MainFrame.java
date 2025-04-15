@@ -14,16 +14,11 @@ import java.util.Vector;
 
 
 public class MainFrame extends JFrame {
-    private JButton bookManagementButton;
     private JPanel mainPanel;
-    private JButton memberManagementButton;
-    private JButton reportsButton;
-    private JButton exportButton;
     private JTextField tFTitle;
     private JTextField tFAuthor;
     private JTextField tFISBN;
     private JButton addButton;
-    private JButton updateButton;
     private JButton deleteButton;
     private JTable booksTable;
     private JScrollPane bookTableScroll;
@@ -34,6 +29,9 @@ public class MainFrame extends JFrame {
     private JLabel dayAndDate;
     private JTextField tFSearch;
     private JButton searchButton;
+    private JButton deleteBookButton;
+    private JButton PDFButton;
+    private JButton excelButton;
 
     // Class fields
     private String title;
@@ -43,10 +41,10 @@ public class MainFrame extends JFrame {
     private String[] columnNames = {"Title", "Author", "ISBN", "Status", "Added Date"};
 
     public MainFrame() {
-        initailSetup();
+        initialSetup();
     }
 
-    void initailSetup() {
+    void initialSetup() {
         setSize(new Dimension(800, 600));
         add(mainPanel);
         this.setLocationRelativeTo(MainFrame.this);
@@ -63,7 +61,7 @@ public class MainFrame extends JFrame {
     private void setupEventListeners() {
         searchButton.addActionListener(e -> findBook());
         addButton.addActionListener(e -> addBook());
-        deleteButton.addActionListener(e -> deleteSectedBook());
+        deleteButton.addActionListener(e -> deleteSelectedBook());
     }
 
     void getDateAndTime() {
@@ -71,20 +69,17 @@ public class MainFrame extends JFrame {
     }
 
     void fetchTableData() {
-        // setting the entire model to the table
         booksTable.setModel(new BooksTableUtil().createTableModel(columnNames));
     }
 
     int fetchTableData(Vector<Vector<Object>> books) {
-        // setting the entire model to the table
         booksTable.setModel(new BooksTableUtil().createTableModel(columnNames,
                 books));
+        // If there is data
         if (booksTable.getModel().getRowCount() > 0) {
             return 1;
         }
         return 0;
-
-
     }
 
     void setTableColumnStyles() {
@@ -101,7 +96,6 @@ public class MainFrame extends JFrame {
         }
     }
 
-    // Books based functions
     void findBook() {
         String bookInfo = tFSearch.getText();
         Vector<Vector<Object>> books = BookService.findBook(bookInfo);
@@ -110,25 +104,30 @@ public class MainFrame extends JFrame {
 
         if (row > 0) {
             fetchTableData(books);
+            tFSearch.setText("");
         } else {
             showMessageBox("Book not found");
-            resetAllTextFields();
-            fetchTableData();
-
+            refreshTableAndClearFields();
         }
 
     }
 
-    void deleteSectedBook() {
-        String isbn = getSelectedRow();
-        if (isbn != null) {
-            boolean isDeleted = BookService.deleteSelectedBook(isbn);
+    void deleteSelectedBook() {
+        if (booksTable.getSelectedRow() == -1) {
+            showMessageBox("Please select a book to delete.");
+            return;
+        }
+        int row = getSelectedRow();
+        String ISBN = (String) booksTable.getValueAt(row, 2);
+        if (ISBN != null) {
+            boolean isDeleted = BookService.deleteSelectedBook(ISBN);
             if (isDeleted) {
                 showMessageBox("Book deleted successfully");
+                tFTitle.requestFocus();
             } else {
                 showMessageBox("Book Not Deleted");
             }
-            fetchTableData();
+            refreshTableAndClearFields();
         } else {
             showMessageBox("Select a Book from the table");
         }
@@ -138,7 +137,8 @@ public class MainFrame extends JFrame {
         title = tFTitle.getText();
         author = tFAuthor.getText();
         isbn = tFISBN.getText();
-        status = comboStatus.getSelectedItem().toString().equals("Available") ? Book.Status.AVAILABLE : Book.Status.ISSUED;
+        status = Book.Status.valueOf(comboStatus.getSelectedItem().toString().toUpperCase());
+        ;
 
         // Fields must not be empty; show dialog if they are empty
         if (title.isEmpty() || author.isEmpty() || isbn.isEmpty()) {
@@ -157,8 +157,7 @@ public class MainFrame extends JFrame {
         } catch (SQLException e) {
             showMessageBox(e.getMessage().toString());
         } finally {
-            fetchTableData();
-            resetAllTextFields();
+            refreshTableAndClearFields();
         }
     }
 
@@ -166,17 +165,18 @@ public class MainFrame extends JFrame {
         JOptionPane.showMessageDialog(null, message);
     }
 
-    String getSelectedRow() {
+    int getSelectedRow() {
         int row = booksTable.getSelectedRow();
         if (row >= 0) {
-            //get the ISBN
-            String ISBN = (String) booksTable.getValueAt(row, 2);
-            //return the ISBN
-            return ISBN;
-
+            return row;
         } else {
-            return null;
+            return 0;
         }
+    }
+
+    void refreshTableAndClearFields() {
+        fetchTableData();
+        resetAllTextFields();
     }
 
     void resetAllTextFields() {

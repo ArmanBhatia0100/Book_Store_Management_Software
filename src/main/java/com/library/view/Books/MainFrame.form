@@ -85,37 +85,54 @@
           <size top="15" left="15" bottom="0" right="15"/>
         </border>
         <children>
-          <grid id="54104" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+          <grid id="54104" layout-manager="BorderLayout" hgap="0" vgap="0">
             <constraints border-constraint="South"/>
             <properties/>
             <border type="empty">
               <size top="15" left="15" bottom="15" right="15"/>
             </border>
             <children>
-              <component id="74da3" class="javax.swing.JButton" binding="bookManagementButton" default-binding="true">
-                <constraints/>
-                <properties>
-                  <text value="Book Management"/>
-                </properties>
-              </component>
-              <component id="8188" class="javax.swing.JButton" binding="memberManagementButton" default-binding="true">
-                <constraints/>
-                <properties>
-                  <text value="Member Management"/>
-                </properties>
-              </component>
-              <component id="efacf" class="javax.swing.JButton" binding="reportsButton" default-binding="true">
-                <constraints/>
-                <properties>
-                  <text value="Reports"/>
-                </properties>
-              </component>
-              <component id="113df" class="javax.swing.JButton" binding="exportButton" default-binding="true">
-                <constraints/>
-                <properties>
-                  <text value="Export"/>
-                </properties>
-              </component>
+              <grid id="37dde" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints border-constraint="West"/>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="a93fb" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="Export To"/>
+                    </properties>
+                  </component>
+                  <component id="c5b27" class="javax.swing.JButton" binding="PDFButton" default-binding="true">
+                    <constraints/>
+                    <properties>
+                      <text value="PDF"/>
+                    </properties>
+                  </component>
+                  <component id="1ea48" class="javax.swing.JButton" binding="excelButton" default-binding="true">
+                    <constraints/>
+                    <properties>
+                      <text value="Excel"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="f9a44" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints border-constraint="East"/>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="7119a" class="javax.swing.JButton" binding="deleteBookButton" default-binding="true">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Delete Book"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
             </children>
           </grid>
           <grid id="6da79" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -124,7 +141,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <grid id="be87f" binding="formPanel" layout-manager="GridLayoutManager" row-count="3" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="be87f" binding="formPanel" layout-manager="GridLayoutManager" row-count="2" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -148,22 +165,6 @@
                     </constraints>
                     <properties>
                       <text value="Add"/>
-                    </properties>
-                  </component>
-                  <component id="786df" class="javax.swing.JButton" binding="updateButton" default-binding="true">
-                    <constraints>
-                      <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="Update"/>
-                    </properties>
-                  </component>
-                  <component id="fcd7c" class="javax.swing.JButton" binding="deleteButton" default-binding="true">
-                    <constraints>
-                      <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="Delete"/>
                     </properties>
                   </component>
                   <component id="8d6ef" class="javax.swing.JComboBox" binding="comboStatus">
@@ -196,7 +197,6 @@
                   <component id="bd5b1" class="javax.swing.JLabel">
                     <constraints>
                       <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-
                     </constraints>
                     <properties>
                       <text value="ISBN"/>
@@ -209,20 +209,17 @@
                       </grid>
                     </constraints>
                     <properties>
-                      <text value=""/>          
-
+                      <text value=""/>
                     </properties>
                   </component>
                   <component id="d8bd9" class="javax.swing.JLabel">
                     <constraints>
                       <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-
                     </constraints>
                     <properties>
                       <text value="Author"/>
                     </properties>
                   </component>
-
                   <component id="718d2" class="javax.swing.JTextField" binding="tFAuthor">
                     <constraints>
                       <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
@@ -230,7 +227,14 @@
                       </grid>
                     </constraints>
                     <properties/>
-
+                  </component>
+                  <component id="fcd7c" class="javax.swing.JButton" binding="deleteButton" default-binding="true">
+                    <constraints>
+                      <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Delete"/>
+                    </properties>
                   </component>
                 </children>
               </grid>

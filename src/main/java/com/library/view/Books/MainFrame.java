@@ -9,7 +9,6 @@ import com.library.view.utils.JOptionsUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Vector;
 
 
@@ -47,14 +46,14 @@ public class MainFrame extends JFrame {
         setSize(new Dimension(800, 600));
         add(mainPanel);
         this.setLocationRelativeTo(MainFrame.this);
+
         DateTimeUpdater.getDateAndTime();
         setupEventListeners();
+
         BookController.BooksTableUtil.fetchTableData(booksTable);
         BookController.BooksTableUtil.setTableColumnStyles(booksTable);
-        setVisible(true);
 
-        //Table setup
-        booksTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        setVisible(true);
     }
 
     private void setupEventListeners() {
@@ -67,25 +66,25 @@ public class MainFrame extends JFrame {
         String bookInfo = tFSearch.getText();
         Vector<Vector<Object>> books = BookController.findBook(bookInfo);
 
-        int row = books.size();
-
-        if (row > 0) {
+        if (!books.isEmpty()) {
             BookController.BooksTableUtil.fetchTableData(booksTable, books);
-            tFSearch.setText("");
         } else {
             JOptionsUtils.showMessageBox("Book not found");
-            refreshTableAndClearFields();
         }
 
+        refreshTableAndClearFields();
     }
 
     private void deleteSelectedBook() {
-        if (booksTable.getSelectedRow() == -1) {
+
+        // Not Selected
+        if (getSelectedRow() == -1) {
             JOptionsUtils.showMessageBox("Please select a book to delete.");
             return;
         }
-        int row = getSelectedRow();
-        String ISBN = (String) booksTable.getValueAt(row, 2);
+
+        String ISBN = (String) booksTable.getValueAt(getSelectedRow(), 2);
+
         if (ISBN != null) {
             boolean isDeleted = BookController.deleteSelectedBook(ISBN);
             if (isDeleted) {
@@ -98,6 +97,7 @@ public class MainFrame extends JFrame {
         } else {
             JOptionsUtils.showMessageBox("Select a Book from the table");
         }
+
     }
 
     private void addBook() {
@@ -107,7 +107,7 @@ public class MainFrame extends JFrame {
         status = Book.Status.valueOf(comboStatus.getSelectedItem().toString().toUpperCase());
 
         // Validating the input
-        Boolean validated = InputValidator.emptyInputChecker(title, author, isbn);
+        boolean validated = InputValidator.emptyInputChecker(title, author, isbn);
 
         if (!validated) {
             JOptionsUtils.showMessageBox("All Fields Must Be Filled");
@@ -122,10 +122,8 @@ public class MainFrame extends JFrame {
                 JOptionsUtils.showMessageBox("Book added successfully");
             }
 
-        } catch (SQLIntegrityConstraintViolationException e) {
-            JOptionsUtils.showMessageBox(e.getMessage().toString());
         } catch (SQLException e) {
-            JOptionsUtils.showMessageBox(e.getMessage().toString());
+            JOptionsUtils.showMessageBox(e.getMessage());
         } finally {
             refreshTableAndClearFields();
         }
@@ -141,8 +139,9 @@ public class MainFrame extends JFrame {
         tFTitle.setText("");
         tFAuthor.setText("");
         tFISBN.setText("");
+        tFSearch.setText("");
         comboStatus.setSelectedIndex(0);
     }
-    
+
 }
 

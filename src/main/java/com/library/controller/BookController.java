@@ -65,12 +65,14 @@ public class BookController {
 
         public static int fetchTableData(JTable booksTable) {
             booksTable.setModel(BookController.BooksTableUtil.createTableModel(columnNames));
+            booksTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             return 0;
         }
 
         public static int fetchTableData(JTable booksTable, Vector<Vector<Object>> books) {
             booksTable.setModel(BookController.BooksTableUtil.createTableModel(columnNames,
                     books));
+            booksTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             // If there is data
             if (booksTable.getModel().getRowCount() > 0) {
                 return 1;

@@ -4,7 +4,6 @@
 package com.library;
 
 import com.formdev.flatlaf.IntelliJTheme;
-import com.library.view.Books.MainFrame;
 
 import javax.swing.*;
 
@@ -21,7 +20,7 @@ public class Advance_library_management_system {
                                        public void run() {
                                            IntelliJTheme.setup(Advance_library_management_system.class.getResourceAsStream(
                                                    "/DeepOcean.theme.json"));
-                                           new MainFrame();
+                                         new com.library.view.Books.MainFrame();
                                        }
                                    }
         );

@@ -41,11 +41,11 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         initialSetup();
-
     }
 
     private void initialSetup() {
         setSize(new Dimension(800, 600));
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         add(mainPanel);
         this.setLocationRelativeTo(MainFrame.this);
 

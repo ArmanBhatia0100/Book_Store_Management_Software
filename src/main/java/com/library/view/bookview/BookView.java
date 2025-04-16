@@ -17,7 +17,6 @@ public class BookView extends JPanel {
     private JPanel bookViewPanel;
     private JTextField tFSearch;
     private JButton searchButton;
-    private JComboBox comboBox1;
     private JTable booksTable;
     private JButton PDFButton;
     private JButton deleteBookButton;

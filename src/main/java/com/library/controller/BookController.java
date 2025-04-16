@@ -64,12 +64,15 @@ public class BookController {
         }
 
         public static int fetchTableData(JTable booksTable) {
+            setTableColumnStyles(booksTable);
             booksTable.setModel(BookController.BooksTableUtil.createTableModel(columnNames));
             booksTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
             return 0;
         }
 
         public static int fetchTableData(JTable booksTable, Vector<Vector<Object>> books) {
+            setTableColumnStyles(booksTable);
             booksTable.setModel(BookController.BooksTableUtil.createTableModel(columnNames,
                     books));
             booksTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -81,7 +84,7 @@ public class BookController {
         }
 
         public static void setTableColumnStyles(JTable booksTable) {
-            booksTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 16));
+            booksTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
             DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
 

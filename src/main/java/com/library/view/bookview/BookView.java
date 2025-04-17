@@ -7,9 +7,12 @@ import com.library.utils.BooksPageUtils.FileChooser;
 import com.library.utils.BooksPageUtils.InputValidator;
 import com.library.utils.BooksPageUtils.JOptionsUtils;
 import com.library.view.MainView;
+import com.library.view.ViewCardsContainer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Vector;
 
@@ -26,6 +29,7 @@ public class BookView extends JPanel {
     private JTextField tFISBN;
     private JButton addButton;
     private JComboBox comboStatus;
+    private JComboBox comboOperations;
 
     // Class fields
     private String title;
@@ -33,11 +37,26 @@ public class BookView extends JPanel {
     private String isbn;
     private Book.Status status;
 
+    // Layout manager
+    ViewCardsContainer parentPanel;
+    CardLayout cardLayout;
 
-    public BookView() {
+    public BookView(ViewCardsContainer parent) {
+        this.parentPanel = parent;
+        this.cardLayout = parent.getCardLayout();
+
         setLayout(new BorderLayout());
         add(bookViewPanel);
+
+
         initialSetup();
+        comboOperations.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(parentPanel, "memberView");
+
+            }
+        });
     }
 
     private void initialSetup() {

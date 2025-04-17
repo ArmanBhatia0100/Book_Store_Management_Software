@@ -12,7 +12,10 @@ public class MainView extends JFrame {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setTitle("Library Management System");
     setLocationRelativeTo(null);
-    add(new BookView());
+
+    ViewCardsContainer viewCardContainer = new ViewCardsContainer();
+    add(viewCardContainer);
+
     setVisible(true);
     }
 }

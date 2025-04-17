@@ -44,19 +44,12 @@ public class BookView extends JPanel {
     public BookView(ViewCardsContainer parent) {
         this.parentPanel = parent;
         this.cardLayout = parent.getCardLayout();
-
         setLayout(new BorderLayout());
         add(bookViewPanel);
 
 
         initialSetup();
-        comboOperations.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cardLayout.show(parentPanel, "memberView");
 
-            }
-        });
     }
 
     private void initialSetup() {
@@ -74,6 +67,7 @@ public class BookView extends JPanel {
         addButton.addActionListener(e -> addBook());
         deleteBookButton.addActionListener(e -> deleteSelectedBook());
         PDFButton.addActionListener(e -> FileChooser.getPDFFilePath(booksTable));
+        comboOperations.addActionListener(e-> cardLayout.show(parentPanel, "memberView"));
     }
 
     private void findBook() {

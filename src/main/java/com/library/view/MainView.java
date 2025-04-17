@@ -15,7 +15,6 @@ public class MainView extends JFrame {
 
     ViewCardsContainer viewCardContainer = new ViewCardsContainer();
     add(viewCardContainer);
-
     setVisible(true);
     }
 }

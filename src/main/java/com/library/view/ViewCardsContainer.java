@@ -11,7 +11,7 @@ import com.library.view.bookview.BookView;
 public class ViewCardsContainer extends JPanel {
    private CardLayout cardLayout = null;
     public ViewCardsContainer() {
-         cardLayout = new CardLayout();
+        cardLayout = new CardLayout();
         this.setLayout(cardLayout);
 
         BookView bookView= new BookView(this);

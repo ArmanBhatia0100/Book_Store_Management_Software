@@ -6,7 +6,6 @@ import com.library.utils.BooksPageUtils.DateTimeUpdater;
 import com.library.utils.BooksPageUtils.FileChooser;
 import com.library.utils.BooksPageUtils.InputValidator;
 import com.library.utils.BooksPageUtils.JOptionsUtils;
-import com.library.view.MainView;
 import com.library.view.ViewCardsContainer;
 
 import javax.swing.*;
@@ -29,6 +28,8 @@ public class BookView extends JPanel {
     private JTextField tFISBN;
     private JButton addButton;
     private JComboBox comboStatus;
+    public JPanel operationsPanel;
+    private JButton memeberManagementButton;
     private JComboBox comboOperations;
 
     // Class fields
@@ -67,7 +68,8 @@ public class BookView extends JPanel {
         addButton.addActionListener(e -> addBook());
         deleteBookButton.addActionListener(e -> deleteSelectedBook());
         PDFButton.addActionListener(e -> FileChooser.getPDFFilePath(booksTable));
-        comboOperations.addActionListener(e-> cardLayout.show(parentPanel, "memberView"));
+        memeberManagementButton.addActionListener(e -> {cardLayout.show(parentPanel, "memberView");});
+
     }
 
     private void findBook() {

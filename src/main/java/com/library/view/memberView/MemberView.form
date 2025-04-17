@@ -2,7 +2,7 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.library.view.MemberView">
   <grid id="27dc6" binding="panel1" default-binding="true" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
-      <xy x="20" y="20" width="492" height="400"/>
+      <xy x="20" y="20" width="632" height="400"/>
     </constraints>
     <properties>
       <background color="-1604295"/>
@@ -73,31 +73,28 @@
                   <verticalTextPosition value="3"/>
                 </properties>
               </component>
-              <grid id="762b0" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                <margin top="0" left="0" bottom="0" right="0"/>
+              <grid id="762b0" binding="operationsPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="2">
                 <constraints>
                   <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="6d40c" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
+                  <component id="3e822" class="javax.swing.JLabel">
+                    <constraints/>
                     <properties>
-                      <text value="Select Operation:"/>
+                      <horizontalAlignment value="4"/>
+                      <horizontalTextPosition value="4"/>
+                      <preferredSize width="177" height="17"/>
+                      <text value="Select Operations:"/>
                     </properties>
                   </component>
-                  <component id="8d4b8" class="javax.swing.JComboBox" binding="comboOperations">
-                    <constraints>
-                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
+                  <component id="c14c8" class="javax.swing.JButton" binding="bookMgmtBtn">
+                    <constraints/>
                     <properties>
-                      <model>
-                        <item value="Book Management"/>
-                        <item value="Member Management"/>
-                      </model>
+                      <background color="-14013650"/>
+                      <preferredSize width="177" height="34"/>
+                      <text value="Book Management"/>
                     </properties>
                   </component>
                 </children>

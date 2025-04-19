@@ -13,6 +13,13 @@ public class MemberView extends JPanel {
     private JPanel headerPanel;
     private JPanel bodyPanel;
     public JPanel operationsPanel;
+    private JTable table1;
+    private JButton editButton;
+    private JButton updateButton;
+    private JButton deleteButton;
+    private JPanel actionPanel;
+    private JPanel memberInfo;
+    private JTable table2;
 
     ViewCardsContainer parentPanel;
     CardLayout cardLayout;

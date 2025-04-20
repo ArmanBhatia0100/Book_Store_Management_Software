@@ -20,9 +20,10 @@ public class MemberView extends JPanel {
     private JTextField textField1;
     private JTextField textField2;
     private JTextField textField3;
-    private JButton editButton;
-    private JButton deleteButton;
-    private JButton saveButton;
+    private JButton addMemberButton;
+    private JButton EDITButton;
+    private JButton SAVECHANGESButton;
+    private JButton DELETEButton;
 
     ViewCardsContainer parentPanel;
     CardLayout cardLayout;

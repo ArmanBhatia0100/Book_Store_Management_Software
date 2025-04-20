@@ -1,7 +1,7 @@
 package com.library.view;
 
 import com.library.view.bookview.BookView;
-import com.library.view.MemberView;
+import com.library.view.memberView.MemberView;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,6 @@
-package com.library.view;
+package com.library.view.memberView;
+
+import com.library.view.ViewCardsContainer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,13 +15,14 @@ public class MemberView extends JPanel {
     private JPanel headerPanel;
     private JPanel bodyPanel;
     public JPanel operationsPanel;
+    private JTable table1;
+    private JTable table2;
     private JTextField textField1;
     private JTextField textField2;
     private JTextField textField3;
     private JButton editButton;
-    private JButton updateButton;
     private JButton deleteButton;
-    private JTable table1;
+    private JButton saveButton;
 
     ViewCardsContainer parentPanel;
     CardLayout cardLayout;
